@@ -1,10 +1,10 @@
-# Rafał Kochanowski
+## Rafał Kochanowski
 
-Software tester | Quality assurance | Developer
+Software tester / Quality assurance / Developer
 
 Location: Warsaw, Poland
 
-https://github.com/rafal-qa
+[https://github.com/rafal-qa](https://github.com/rafal-qa)
 
 ### Projects
 
