@@ -1,4 +1,4 @@
-## Rafał Kochanowski
+# Rafał Kochanowski
 
 Software tester / Quality assurance / Developer
 
