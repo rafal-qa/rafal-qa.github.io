@@ -1,17 +1,14 @@
-
-/* global data_devtools_head, data_devtools_main, data_devtools_stat */
-
-class DevtoolsReport extends Report {
+class ConsoleReport extends Report {
 
     constructor() {
         super();
-        this.devtools_logs = new DataParser(data_devtools_head, data_devtools_main);
-        this.table = $('.table-wrapper.report-devtools table');
+        this.console_logs = new DataParser(data_console_head, data_console_main);
+        this.table = $('.table-wrapper.report-console table');
         this.table_loaded = {
-            "devtools": false
+            "console": false
         };
         this.table_order = {
-            "devtools": [[2, "desc"], [ 1, "desc" ]]
+            "console": [[2, "desc"], [1, "desc"]]
         };
 
         this.log_levels = {
@@ -45,15 +42,16 @@ class DevtoolsReport extends Report {
 
     addStats() {
         var stats = $('#stats-main');
-        for (name in data_devtools_stat) {
-            var value = data_devtools_stat[name],
+        for (var name in data_console_stat) {
+            var value = data_console_stat[name],
                 class_name = '.stats-' + name;
             $(class_name + ' .value', stats).text(value);
+            var color;
             if (name === 'error') {
-                var color = value > 0 ? 'red' : 'green';
+                color = value > 0 ? 'red' : 'green';
                 $(class_name, stats).addClass(color);
             } else if (name === 'warning') {
-                var color = value > 0 ? 'yellow' : 'green';
+                color = value > 0 ? 'yellow' : 'green';
                 $(class_name, stats).addClass(color);
             }
         }
@@ -62,60 +60,60 @@ class DevtoolsReport extends Report {
     insertDataToTable() {
         var html = "";
 
-        if (!this.devtools_logs.hasData()) {
+        if (!this.console_logs.hasData()) {
             return false;
         }
-        this.devtools_logs.reset();
+        this.console_logs.reset();
         do {
-            var log_id = this.devtools_logs.get("id"),
-                description = this.devtools_logs.get("description"),
-                occurrences = this.devtools_logs.get("occurrences"),
-                level_id = this.devtools_logs.get("level_id"),
-                level = level_id + '_' + this.log_levels[level_id],
-                source_id = this.devtools_logs.get("source_id"),
-                source = this.log_sources[source_id],
+            var log_id = this.console_logs.get("id"),
+                description = this.console_logs.get("description"),
+                occurrences = this.console_logs.get("occurrences"),
+                level_id = this.console_logs.get("level_id"),
+                level_name = this.log_levels[level_id],
+                source_id = this.console_logs.get("source_id"),
+                source_name = this.log_sources[source_id],
                 occurrences_color = this.log_levels_color[level_id];
 
-            html += '<tr data-log-id="' + log_id + '">'
-                    + '<td>' + breakLine(escapeHtml(description)) + '</td>'
-                    + '<td><a class="ui ' + occurrences_color + ' label details">' + occurrences + '</a></td>'
-                    + '<td>' + level + '</td>'
-                    + '<td>' + source + '</td>'
-                  + '</tr>';
+            html += '<tr data-log-id="' + log_id + '">' +
+                      '<td>' + breakLine(escapeHtml(description)) + '</td>' +
+                      '<td><a class="ui ' + occurrences_color + ' label details">' + occurrences + '</a></td>' +
+                      '<td data-order="' + level_id + '">' + level_name + '</td>' +
+                      '<td>' + source_name + '</td>' +
+                    '</tr>';
         }
-        while (this.devtools_logs.forward());
+        while (this.console_logs.forward());
 
         $("tbody", this.table).html(html);
     }
 
     insertDataToModal(clicked_element) {
         var log_id = clicked_element.closest("tr").attr("data-log-id");
-        this.devtools_logs.setIndexById(log_id);
+        this.console_logs.setIndexById(log_id);
 
         var modal = $('#details-modal'),
-            description = this.devtools_logs.get("description"),
-            level_id = this.devtools_logs.get("level_id"),
+            description = this.console_logs.get("description"),
+            level_id = this.console_logs.get("level_id"),
             color = this.log_levels_color[level_id];
 
         description = escapeHtml(description);
         description = breakLine(description);
 
         $('.ui.message', modal).removeClass('blue yellow red').addClass(color);
-        $('.devtools-message', modal).html(description);
+        $('.console-message', modal).html(description);
 
         var content = this._modalContent();
         $('table tbody', modal).html(content);
     }
 
     _modalContent() {
-        var pages_with_log = this.devtools_logs.get("pages_with_log"),
+        var pages_with_log = this.console_logs.get("pages_with_log"),
             html = "";
         for (var i = 0; i < pages_with_log.length; i++) {
             var page_id = pages_with_log[i];
             this.pages.setIndexById(page_id);
-            var append_row = '<tr>'
-                             + '<td>' + this.pages.getAsLink("url") + '</td>'
-                           + '</tr>';
+            var append_row = '<tr>' +
+                               '<td>' + this.pages.getAsLink("url") + '</td>' +
+                             '</tr>';
             html += append_row;
         }
         return html;

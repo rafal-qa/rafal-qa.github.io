@@ -1,6 +1,3 @@
-
-/* global data_pages_head, data_pages_main */
-
 class Report {
 
     // information about pages on every report
@@ -57,13 +54,10 @@ class Report {
     }
 
     initDetailsModal() {
-        var showModal = function() {
-            $('#details-modal').modal('show');
-        };
         var that = this;
         $('.table-wrapper table').on('click','.label.details',function(){
             that.insertDataToModal($(this));
-            showModal();
+            $('#details-modal').modal('show');
         });
     }
 
